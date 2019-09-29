@@ -7,6 +7,14 @@ public class Scritch : Gtk.Application {
         );
     }
 
+    protected void on_buffer_changed (Gtk.TextBuffer buffer) {
+        try {
+        FileUtils.set_contents("scritch.txt", buffer.text);
+        } catch (Error e) {
+            //print (e.message);
+        }
+    }
+
     protected override void activate () {
         var main_window = new Gtk.ApplicationWindow (this);
         main_window.default_height = 500;
@@ -15,6 +23,8 @@ public class Scritch : Gtk.Application {
 
         var buffer = new Gtk.TextBuffer (null);
         var textview = new Gtk.TextView.with_buffer (buffer);
+
+        buffer.changed.connect (on_buffer_changed);
         textview.set_wrap_mode (Gtk.WrapMode.WORD);
 
         var scrolled_window = new Gtk.ScrolledWindow (null, null);
