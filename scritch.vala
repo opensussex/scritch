@@ -8,12 +8,23 @@ public class Scritch : Gtk.Application {
     }
 
     protected void on_buffer_changed (Gtk.TextBuffer buffer) {
+        buffer_changed = true;
+    }
+
+    protected bool save_buffer() {
         try {
-        FileUtils.set_contents("scritch.txt", buffer.text);
+            if (buffer_changed) {
+                FileUtils.set_contents("scritch.txt", buffer.text);
+                buffer_changed = false;
+            }
         } catch (Error e) {
             //print (e.message);
         }
+        return true;
     }
+
+    protected Gtk.TextBuffer buffer;
+    protected bool buffer_changed;
 
     protected override void activate () {
         var main_window = new Gtk.ApplicationWindow (this);
@@ -21,10 +32,12 @@ public class Scritch : Gtk.Application {
         main_window.default_width = 500;
         main_window.title = "Scritch";
 
-        var buffer = new Gtk.TextBuffer (null);
+        buffer = new Gtk.TextBuffer (null);
         var textview = new Gtk.TextView.with_buffer (buffer);
 
         buffer.changed.connect (on_buffer_changed);
+        GLib.Timeout.add_seconds_full(GLib.Priority.DEFAULT, 15, save_buffer);
+
         textview.set_wrap_mode (Gtk.WrapMode.WORD);
 
         var scrolled_window = new Gtk.ScrolledWindow (null, null);
