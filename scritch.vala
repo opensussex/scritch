@@ -31,8 +31,15 @@ public class Scritch : Gtk.Application {
         main_window.default_height = 500;
         main_window.default_width = 500;
         main_window.title = "Scritch";
+        string initial_buffer_content;
+        try {
+            FileUtils.get_contents("scritch.txt", out initial_buffer_content);
+        } catch (Error e) {
+
+        }
 
         buffer = new Gtk.TextBuffer (null);
+        buffer.set_text (initial_buffer_content);
         var textview = new Gtk.TextView.with_buffer (buffer);
 
         buffer.changed.connect (on_buffer_changed);
