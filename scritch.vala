@@ -38,19 +38,43 @@ public class Scritch : Gtk.Application {
 
         }
 
+        var style = """
+            textview text {
+                background-color: #131c16;
+                color: #3ce85c;
+            }
+        """;
+
+        var css_provider = new Gtk.CssProvider();
+        
+        try {
+            css_provider.load_from_data(style, -1);
+        } catch (GLib.Error e) {
+            warning ("Failed to parse css style : %s", e.message);
+        }
+
+        Gtk.StyleContext.add_provider_for_screen (
+                Gdk.Screen.get_default (),
+                css_provider,
+                Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+            );
+
         buffer = new Gtk.TextBuffer (null);
         buffer.set_text (initial_buffer_content);
         var textview = new Gtk.TextView.with_buffer (buffer);
+        textview.left_margin  = 5;
+        textview.right_margin  = 5;
+        textview.top_margin  = 5;
+        textview.bottom_margin  = 5;
 
         buffer.changed.connect (on_buffer_changed);
-        GLib.Timeout.add_seconds_full(GLib.Priority.DEFAULT, 15, save_buffer);
+        GLib.Timeout.add_seconds_full(GLib.Priority.DEFAULT, 5, save_buffer);
 
         textview.set_wrap_mode (Gtk.WrapMode.WORD);
 
         var scrolled_window = new Gtk.ScrolledWindow (null, null);
         scrolled_window.set_policy (Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC);
         scrolled_window.add (textview);
-        scrolled_window.set_border_width (5);
 
         main_window.add (scrolled_window);
 
