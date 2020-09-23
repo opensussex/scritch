@@ -14,7 +14,8 @@ public class Scritch : Gtk.Application {
     protected bool save_buffer() {
         try {
             if (buffer_changed) {
-                FileUtils.set_contents("scritch.txt", buffer.text);
+                var home_dir = GLib.Environment.get_home_dir ();
+                FileUtils.set_contents(home_dir + "/scritch.txt", buffer.text);
                 buffer_changed = false;
             }
         } catch (Error e) {
@@ -32,8 +33,12 @@ public class Scritch : Gtk.Application {
         main_window.default_width = 500;
         main_window.title = "Scritch";
         string initial_buffer_content;
+        print("!!!");
         try {
-            FileUtils.get_contents("scritch.txt", out initial_buffer_content);
+            var home_dir = GLib.Environment.get_home_dir ();
+            print("!!!");
+            print(home_dir);
+            FileUtils.get_contents(home_dir + "/scritch.txt", out initial_buffer_content);
         } catch (Error e) {
 
         }
